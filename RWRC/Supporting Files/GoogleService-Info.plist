@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AD_UNIT_ID_FOR_BANNER_TEST</key>
+	<string>ca-app-pub-3940256099942544/2934735716</string>
+	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
+	<string>ca-app-pub-3940256099942544/4411468910</string>
+	<key>CLIENT_ID</key>
+	<string>527347318325-ma402v1sa1dftvb6v42pjshseui2vi6s.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.527347318325-ma402v1sa1dftvb6v42pjshseui2vi6s</string>
+	<key>API_KEY</key>
+	<string>AIzaSyApAOSvjB-NfyR1YsgJ1FyOlgn7lpUrb-E</string>
+	<key>GCM_SENDER_ID</key>
+	<string>527347318325</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.rubenmayer.indi</string>
+	<key>PROJECT_ID</key>
+	<string>indithefitnessbot</string>
+	<key>STORAGE_BUCKET</key>
+	<string>indithefitnessbot.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<true></true>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<false></false>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:527347318325:ios:55a2225535243f78</string>
+	<key>DATABASE_URL</key>
+	<string>https://indithefitnessbot.firebaseio.com</string>
+</dict>
+</plist>
