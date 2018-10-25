@@ -44,10 +44,11 @@ class FoodJournalViewController: UIViewController, UITableViewDataSource, UITabl
       quickAddButton.isHidden = true
     }
     tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 220))
+    downloadEntriesForDay(dayIndex: 0)
   }
   
   @IBAction func didPressQuickAddButton(_ sender: Any) {
-    journalEntries.insert(JournalEntry(name: "Quick Add", totalCalories: 0, quantityDescription: "", id: Int.random(in: -9999999999 ..< -1)), at: 0)
+    journalEntries.insert(JournalEntry(name: "Quick Add", totalCalories: 0, quantityDescription: "", id: Int.random(in: -9999999999 ..< -1), createdAt: Date()), at: 0)
     reloadTableView()
     let indexPath = IndexPath(item: 0, section: 0)
     self.tableView.scrollToRow(at: indexPath, at: .top, animated: false)
@@ -82,7 +83,7 @@ class FoodJournalViewController: UIViewController, UITableViewDataSource, UITabl
       quickAddButton.isHidden = true
     } else if dayIndex == 0 {
       dateLabel.text = "Today"
-      if UserDataManager.sharedInstance.didPurchaseIndiPro != true {
+      if UserDataManager.sharedInstance.didPurchaseIndiPro == true {
         quickAddButton.isHidden = false
       }
     } else if dayIndex == 1 {
@@ -167,6 +168,11 @@ class FoodJournalViewController: UIViewController, UITableViewDataSource, UITabl
     } else {
       emptyStateView.isHidden = true
     }
+    var totalCalories = 0
+    for entry in journalEntries {
+      totalCalories += entry.totalCalories
+    }
+    totalCaloriesLabel.text = "Total Calories: " + String(totalCalories)
     tableView.reloadData()
   }
   
@@ -176,20 +182,25 @@ class FoodJournalViewController: UIViewController, UITableViewDataSource, UITabl
       if !didCompleteSuccessfully {
         HUD.flash(HUDContentType.labeledError(title: "Error Updating Calories", subtitle: " Are you connected to the internet? "),  delay: 2, completion: nil)
       } else {
-        self.journalEntries[self.journalEntries.index{$0.id == entryId}!].totalCalories = newValue
-        self.reloadTableView()
+        if let index = self.journalEntries.index(where: {$0.id == entryId}) {
+          self.journalEntries[index].totalCalories = newValue
+          self.reloadTableView()
+        }
       }
     }
   }
   
   func sendQuickAddEntry(calories: Int, id: Int) {
-    NetworkingManager().quickAddCaloriesEntry(caloriesValue: calories) { (didCompleteSuccessfully) in
+    NetworkingManager().quickAddCaloriesEntry(caloriesValue: calories) { (didCompleteSuccessfully, newId) in
       HUD.hide()
       if !didCompleteSuccessfully {
         HUD.flash(HUDContentType.labeledError(title: "Error Adding Calories", subtitle: " Are you connected to the internet? "),  delay: 2, completion: nil)
       } else {
-        self.journalEntries[self.journalEntries.index{$0.id == id}!].totalCalories = calories
-        self.reloadTableView()
+        if let index = self.journalEntries.index(where: {$0.id == id}) {
+          self.journalEntries[index].totalCalories = calories
+          self.journalEntries[index].id = newId
+          self.reloadTableView()
+        }
       }
     }
   }

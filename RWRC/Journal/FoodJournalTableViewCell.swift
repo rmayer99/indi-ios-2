@@ -22,7 +22,7 @@ class FoodJournalTableViewCell: UITableViewCell, UITextFieldDelegate {
   override func awakeFromNib() {
     super.awakeFromNib()
     caloriesLabel.delegate = self
-    self.caloriesLabel.addDoneButtonToKeyboard(myAction: #selector(self.caloriesLabel.resignFirstResponder))
+    //self.caloriesLabel.addDoneButtonToKeyboard(myAction: #selector(self.caloriesLabel.resignFirstResponder))
     
   }
   
@@ -42,11 +42,16 @@ class FoodJournalTableViewCell: UITableViewCell, UITextFieldDelegate {
   }
   
   func textFieldDidEndEditing(_ textField: UITextField) {
-    foodJournalVC.updateEntryCalories(id: id, calories: Int(textField.text ?? "0") ?? 0)
+    foodJournalVC.updateEntryCalories(id: id, calories: Int(Double(textField.text ?? "0") ?? 0))
   }
   
   func textFieldDidBeginEditing(_ textField: UITextField) {
     foodJournalVC.scrollToCellWithId(id: id)
+  }
+  
+  func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    foodJournalVC.updateEntryCalories(id: id, calories: Int(Double(textField.text ?? "0") ?? 0))
+    return true
   }
   
 }

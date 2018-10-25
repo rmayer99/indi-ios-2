@@ -114,8 +114,14 @@ final class ChatViewController: MessagesViewController, UIGestureRecognizerDeleg
         self.present(alertController, animated: true)
         
       } else {
-        SKStoreReviewController.requestReview()
-        messageInputBar.inputTextView.becomeFirstResponder()
+        switch environment {
+        case .production, .production2:
+          SKStoreReviewController.requestReview()
+          messageInputBar.inputTextView.becomeFirstResponder()
+        case .development, .logInAsUser:
+          print("not asking for review")
+        }
+        
       }
     }
     

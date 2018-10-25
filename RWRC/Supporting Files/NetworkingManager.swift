@@ -292,18 +292,18 @@ class NetworkingManager {
     })
   }
   
-  func quickAddCaloriesEntry (caloriesValue: Int, completionHandler: @escaping (_ didPerformSuccessfully: Bool) -> Void) {
-    var parameters : Parameters = ["user_id": UserDataManager.sharedInstance.userId, "calories_value": caloriesValue]
+  func quickAddCaloriesEntry (caloriesValue: Int, completionHandler: @escaping (_ didPerformSuccessfully: Bool, _ newId: Int) -> Void) {
+    var parameters : Parameters = ["user_id": UserDataManager.sharedInstance.userId!, "calories_value": caloriesValue]
     performPostRequest(endpoint: "quickAddCaloriesEntry", parameters: parameters, completionHandler: { json, didPerformSuccessfully in
       if didPerformSuccessfully && json != nil {
         print(json)
         if json!["status"].string == "OK" {
-          completionHandler(true)
+          completionHandler(true, json!["result"]["id"].int!)
         } else {
-          completionHandler(false)
+          completionHandler(false, 0)
         }
       } else {
-        completionHandler(false)
+        completionHandler(false, 0)
       }
     })
   }
@@ -318,13 +318,13 @@ class NetworkingManager {
     let endDate = Calendar.current.date(byAdding: components, to: startOfDay)!
     print(startDate)
     print(endDate)
-    let parameters: Parameters = ["user_id" : UserDataManager.sharedInstance.userId, "start_date": startDate, "end_date": endDate]
+    let parameters: Parameters = ["user_id" : UserDataManager.sharedInstance.userId!, "start_date": startDate, "end_date": endDate]
     performGetRequest(endpoint: "getCaloriesEntriesForDateRange", parameters: parameters, completionHandler: { json, didPerformSuccessfully in
       print(json)
       if didPerformSuccessfully && json != nil {
         if json!["status"].string == "OK" {
-          self.processExperimentConfigs(json: json!["result"])
-          completionHandler(true, [])
+          let entries = self.processCaloriesEntries(json: json!["result"])
+          completionHandler(true, entries)
         } else {
           completionHandler(false, [])
         }
@@ -334,8 +334,12 @@ class NetworkingManager {
     })
   }
   
-  func processCaloriesEntries(json: JSON) {
-  
+  func processCaloriesEntries(json: JSON) -> [JournalEntry] {
+    var journalEntries : [JournalEntry] = []
+    for entry in json.array! {
+      journalEntries.append(JournalEntry(name: entry["display_string"].string!, totalCalories:  entry["total_calories"].int!, quantityDescription: entry["quantity_description"].string ?? "", id: entry["id"].int!, createdAt: dateFromString(str: entry["created_at"].string)!))
+    }
+    return journalEntries
   }
   
 }

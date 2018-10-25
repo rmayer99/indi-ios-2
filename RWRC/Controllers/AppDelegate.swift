@@ -174,7 +174,7 @@ extension AppDelegate: RCPurchasesDelegate {
       case .production, .logInAsUser, .production2:
         UserDataManager.sharedInstance.didPurchaseIndiPro = false
       case .development:
-        UserDataManager.sharedInstance.didPurchaseIndiPro = false
+        UserDataManager.sharedInstance.didPurchaseIndiPro = true
       }
     }
   }

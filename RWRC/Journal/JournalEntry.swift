@@ -11,13 +11,15 @@ class JournalEntry {
   var name: String
   var totalCalories: Int
   var quantityDescription: String
-  let id: Int
+  var id: Int
+  var createdAt: Date
   
-  init(name: String, totalCalories: Int, quantityDescription: String, id: Int) {
+  init(name: String, totalCalories: Int, quantityDescription: String, id: Int, createdAt: Date) {
     self.name = name
     self.totalCalories = totalCalories
     self.quantityDescription = quantityDescription
     self.id = id
+    self.createdAt = createdAt
   }
   
 }
