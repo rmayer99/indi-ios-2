@@ -17,6 +17,7 @@ class UserDataManager {
   var purchaseManager : RCPurchases!
   var purchaseProduct : SKProduct? = nil
   var discountedPurchaseProduct : SKProduct? = nil
+
   
   var currentState : Int {
     didSet {
@@ -95,6 +96,25 @@ class UserDataManager {
     }
   }
   
+  
+  var preferredWeightDenomination : String! {
+    didSet {
+      defaults.set(preferredWeightDenomination, forKey: "preferredWeightDenomination" )
+    }
+  }
+  
+  var preferredHeightDenomination : String! {
+    didSet {
+      defaults.set(preferredHeightDenomination, forKey: "preferredHeightDenomination")
+    }
+  }
+  
+  var didProcessCaloriesGoal: Bool! {
+    didSet {
+      defaults.set(didProcessCaloriesGoal, forKey: "didProcessCaloriesGoal")
+    }
+  }
+  
   init() {
     didCompleteOnboardingSlides = defaults.bool(forKey: "didCompleteOnboardingSlides")
     userId = defaults.string(forKey: "userId")
@@ -109,6 +129,9 @@ class UserDataManager {
     experimentConfigName = defaults.string(forKey: "experimentConfigName")
     hasAskedForReview = defaults.bool(forKey: "hasAskedForReview")
     discountActivated = defaults.bool(forKey: "discountActivated")
+    preferredWeightDenomination = defaults.string(forKey: "preferredWeightDenomination") ?? "pounds"
+    preferredHeightDenomination = defaults.string(forKey: "preferredHeightDenomination") ?? " feet"
+    didProcessCaloriesGoal = defaults.bool(forKey: "didProcessCaloriesGoal") ?? false
     
     if let configData = UserDefaults.standard.value(forKey:"configs") as? Data {
       do {
@@ -134,7 +157,9 @@ class UserDataManager {
                                discountedMonthlyPrice : 0,
                                discountedStickerUrl : "",
                                discountedTermsAndConditionsText : "",
-                               discountedPurchasePageButtonLabel : "try Indi")
+                               discountedPurchasePageButtonLabel : "try Indi",
+                               shouldIncludeCaloriesGoal : true
+        )
         
         
       }
@@ -159,7 +184,8 @@ class UserDataManager {
                              discountedMonthlyPrice : 0,
                              discountedStickerUrl : "",
                              discountedTermsAndConditionsText : "",
-                             discountedPurchasePageButtonLabel : "try Indi")
+                             discountedPurchasePageButtonLabel : "try Indi",
+                             shouldIncludeCaloriesGoal: true)
     }
     
     if currentState == 0 {
@@ -189,6 +215,7 @@ class UserDataManager {
     var discountedStickerUrl : String
     var discountedTermsAndConditionsText : String
     var discountedPurchasePageButtonLabel : String
+    var shouldIncludeCaloriesGoal : Bool
   }
   
   func getConfigData(retryAttempts: Int = 0) {
@@ -214,6 +241,10 @@ class UserDataManager {
         
       }
     }
+  }
+  
+  func shouldDisplayCaloriesGoal() -> Bool {
+    return didProcessCaloriesGoal && didPurchaseIndiPro == true
   }
   
   var configs : Configs

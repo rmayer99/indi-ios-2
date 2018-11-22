@@ -50,7 +50,8 @@ class FoodJournalTableViewCell: UITableViewCell, UITextFieldDelegate {
   }
   
   func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-    foodJournalVC.updateEntryCalories(id: id, calories: Int(Double(textField.text ?? "0") ?? 0))
+    //foodJournalVC.updateEntryCalories(id: id, calories: Int(Double(textField.text ?? "0") ?? 0))
+    textField.endEditing(true)
     return true
   }
   

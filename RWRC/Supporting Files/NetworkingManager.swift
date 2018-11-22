@@ -68,6 +68,80 @@ class NetworkingManager {
     }
   }
   
+  func getUserProfile (completionHandler: @escaping (_ didPerformSuccessfully: Bool, _ profileData: [(String, String, ProfileTableViewCell.InputType)]) -> Void) {
+    var parameters : [String:Any] = ["user_id": Int(UserDataManager.sharedInstance.userId ?? "0")]
+    performGetRequest(endpoint: "userInfo", parameters: parameters, completionHandler: { json, didPerformSuccessfully in
+      if didPerformSuccessfully && json != nil {
+        let profileData = self.processUserProfile(json: json!)
+        if profileData != nil {
+          completionHandler(true, profileData!)
+        } else {
+          completionHandler(false, [])
+        }
+      } else {
+        completionHandler(false, [])
+      }
+    })
+  }
+  
+  func processUserProfile(json: JSON) -> [(String, String, ProfileTableViewCell.InputType)]?{
+    print(json)
+    if json["status"].string == "OK" {
+      var profileData : [(String, String, ProfileTableViewCell.InputType)] = []
+      let result = json["result"]
+      profileData.append(("Name", result["name"].string ?? "", .text))
+      let birthdayString = formatDateForDisplay(date: dateFromString(str: result["date_of_birth"].string))
+      profileData.append(("Birthday",birthdayString, .date))
+      var heightString = String(Double(Int((result["height"].float ?? 0) * 100))/100.0) + " M"
+      if UserDataManager.sharedInstance.preferredHeightDenomination == "feet" {
+        heightString = String(Int((result["height"].float ?? 0) * 39.371)/12) + "'" + String(Int((result["height"].float ?? 0) * 39.371)%12)
+      }
+      profileData.append(("Height", heightString, .height))
+      var weightString = String(Int(result["weight"].float ?? 0)) + " kgs"
+      if UserDataManager.sharedInstance.preferredWeightDenomination == "pounds" {
+        weightString = String(Int(((result["weight"].float ?? 0) * 2.20462).rounded())) + " lbs"
+      }
+      
+      profileData.append(("Weight", weightString, .weight))
+      if UserDataManager.sharedInstance.shouldDisplayCaloriesGoal() {
+        let weightGoal = result["weekly_weight_goal"].float
+        if UserDataManager.sharedInstance.preferredWeightDenomination == "pounds" {
+          if weightGoal == -1 {
+            profileData.append(("Weekly Goal", "Lose 2 lbs", .weightGoal))
+          } else if weightGoal == -0.5 {
+            profileData.append(("Weekly Goal", "Lose 1 lb", .weightGoal))
+          } else if weightGoal == 0 {
+            profileData.append(("Weekly Goal", "Stay the same", .weightGoal))
+          } else if weightGoal == 0.5 {
+            profileData.append(("Weekly Goal", "Gain 1 lb", .weightGoal))
+          } else if weightGoal == 1 {
+            profileData.append(("Weekly Goal", "Gain 2 lbs", .weightGoal))
+          }
+        } else if UserDataManager.sharedInstance.preferredWeightDenomination == "kilos" {
+          if weightGoal == -1 {
+            profileData.append(("Weekly Goal", "Lose 1 kilo", .weightGoal))
+          } else if weightGoal == -0.5 {
+            profileData.append(("Weekly Goal", "Lose 0.5 kilos", .weightGoal))
+          } else if weightGoal == 0 {
+            profileData.append(("Weekly Goal", "Stay the same", .weightGoal))
+          } else if weightGoal == 0.5 {
+            profileData.append(("Weekly Goal", "Gain 0.5 kilos", .weightGoal))
+          } else if weightGoal == 1 {
+            profileData.append(("Weekly Goal", "gain 1 kilo", .weightGoal))
+          }
+        }
+        
+        let lifestyleTypes = ["Sedentary", "Slightly Active", "Very Active", "Hardcore"]
+        profileData.append(("Activity", lifestyleTypes[result["lifestyle_type"].int ?? 1], .lifestyleType))
+        
+      }
+
+      return profileData
+    } else {
+      return nil
+    }
+  }
+  
   func signUpUser (completionHandler: @escaping (_ didPerformSuccessfully: Bool) -> Void) {
     var parameters : [String:Any] = [:]
     performPostRequest(endpoint: "signUpUser", parameters: parameters, completionHandler: { json, didPerformSuccessfully in
@@ -99,11 +173,16 @@ class NetworkingManager {
     }
   }
   
-  func setUserInfo (isNewUser: Bool = false, completionHandler: @escaping (_ didPerformSuccessfully: Bool) -> Void) {
+  func setUserInfo (isNewUser: Bool = false, edittedParams : [String: Any]? = nil, completionHandler: @escaping (_ didPerformSuccessfully: Bool) -> Void) {
     switch environment {
     case .development, .production2, .production:
       if UserDataManager.sharedInstance.userId != nil {
         var parameters = buildUserInfoParameters()
+        if edittedParams != nil {
+          for param in edittedParams! {
+            parameters[param.key] = param.value
+          }
+        }
         performPostRequest(endpoint: "userInfo", parameters: parameters, completionHandler: { json, didPerformSuccessfully in
           if didPerformSuccessfully && json != nil {
             print(json)
@@ -240,6 +319,9 @@ class NetworkingManager {
     if let val = json["discountedPurchasePageButtonLabel"].string {
       UserDataManager.sharedInstance.configs.discountedPurchasePageButtonLabel = val
     }
+    if let val = json["shouldIncludeCaloriesGoal"].bool {
+      UserDataManager.sharedInstance.configs.shouldIncludeCaloriesGoal = val
+    }
   }
   
   func sendPurchasedProRequest (completionHandler: @escaping (_ didPerformSuccessfully: Bool) -> Void) {
@@ -308,7 +390,7 @@ class NetworkingManager {
     })
   }
   
-  func getCaloriesEntriesForDateRange (dateIndex: Int, completionHandler: @escaping (_ didPerformSuccessfully: Bool, _ journalEntries: [JournalEntry]) -> Void) {
+  func getCaloriesEntriesForDateRange (dateIndex: Int, completionHandler: @escaping (_ didPerformSuccessfully: Bool, _ journalEntries: [JournalEntry], _ caloriesGoal: Int) -> Void) {
     let startOfDay = Calendar.current.startOfDay(for: Date())
     var components = DateComponents()
     components.day = dateIndex
@@ -324,19 +406,20 @@ class NetworkingManager {
       if didPerformSuccessfully && json != nil {
         if json!["status"].string == "OK" {
           let entries = self.processCaloriesEntries(json: json!["result"])
-          completionHandler(true, entries)
+          let caloriesGoal = json!["calories_goal"].int ?? 1950
+          completionHandler(true, entries, caloriesGoal)
         } else {
-          completionHandler(false, [])
+          completionHandler(false, [], 0)
         }
       } else {
-        completionHandler(false, [])
+        completionHandler(false, [], 0)
       }
     })
   }
   
   func processCaloriesEntries(json: JSON) -> [JournalEntry] {
     var journalEntries : [JournalEntry] = []
-    for entry in json.array! {
+    for entry in json.array!.dropLast() {
       journalEntries.append(JournalEntry(name: entry["display_string"].string!, totalCalories:  entry["total_calories"].int!, quantityDescription: entry["quantity_description"].string ?? "", id: entry["id"].int!, createdAt: dateFromString(str: entry["created_at"].string)!))
     }
     return journalEntries

@@ -25,8 +25,8 @@ class AnalyticsManager {
   func recordPurchase() {
     if UserDataManager.sharedInstance.hasRecordedPurchase != true {
       AppsFlyerTracker.shared().trackEvent(AnalyticsEvents.purchased, withValues: [:])
-      Analytics.logEvent(AnalyticsEvents.purchased, parameters: [:])
       UserDataManager.sharedInstance.hasRecordedPurchase = true
+      recordEvent(eventName: AnalyticsEvents.purchased)
     }
   }
   

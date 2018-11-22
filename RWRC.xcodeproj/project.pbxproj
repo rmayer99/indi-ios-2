@@ -24,6 +24,9 @@
 		48AC74C720A66C2A00AA1788 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48AC74C620A66C2A00AA1788 /* AppDelegate.swift */; };
 		48AC74CE20A66C2C00AA1788 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 48AC74CD20A66C2C00AA1788 /* Assets.xcassets */; };
 		48AC74D120A66C2C00AA1788 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 48AC74CF20A66C2C00AA1788 /* LaunchScreen.storyboard */; };
+		BB00477B21A62FD40042A54A /* Profile.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BB00477A21A62FD40042A54A /* Profile.storyboard */; };
+		BB00478021A630D20042A54A /* ProfileTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB00477F21A630D20042A54A /* ProfileTableViewController.swift */; };
+		BB00478221A632A00042A54A /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB00478121A632A00042A54A /* ProfileTableViewCell.swift */; };
 		BB1E2087211BB395004F23D1 /* Empty.png in Resources */ = {isa = PBXBuildFile; fileRef = BB1E2086211BB395004F23D1 /* Empty.png */; };
 		BB1E208B211CC812004F23D1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB1E208A211CC810004F23D1 /* GoogleService-Info.plist */; };
 		BB1F02A42177EC3700A0481F /* Journal.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BB1F02A32177EC3700A0481F /* Journal.storyboard */; };
@@ -86,6 +89,9 @@
 		48AC74D220A66C2C00AA1788 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6B46E44FFE5424DB91C4A5AE /* Pods-RWRC.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RWRC.release.xcconfig"; path = "Pods/Target Support Files/Pods-RWRC/Pods-RWRC.release.xcconfig"; sourceTree = "<group>"; };
 		94984FD704383917A0A022C8 /* Pods_RWRC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RWRC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB00477A21A62FD40042A54A /* Profile.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Profile.storyboard; sourceTree = "<group>"; };
+		BB00477F21A630D20042A54A /* ProfileTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTableViewController.swift; sourceTree = "<group>"; };
+		BB00478121A632A00042A54A /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
 		BB1E2086211BB395004F23D1 /* Empty.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Empty.png; sourceTree = "<group>"; };
 		BB1E208A211CC810004F23D1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BB1F02A32177EC3700A0481F /* Journal.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Journal.storyboard; sourceTree = "<group>"; };
@@ -184,6 +190,7 @@
 			children = (
 				BB7FED232138DF1100A180CB /* RWRC.entitlements */,
 				BB406F09213625900068A643 /* media */,
+				BB00477C21A62FE80042A54A /* Profile */,
 				BB1F02A22177EC0E00A0481F /* Journal */,
 				48AC74DA20A66C9700AA1788 /* Controllers */,
 				4859775820A68C9B00429CB3 /* Extensions */,
@@ -254,6 +261,17 @@
 				6B46E44FFE5424DB91C4A5AE /* Pods-RWRC.release.xcconfig */,
 			);
 			name = Pods;
+			sourceTree = "<group>";
+		};
+		BB00477C21A62FE80042A54A /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				BB00477A21A62FD40042A54A /* Profile.storyboard */,
+				BB00477F21A630D20042A54A /* ProfileTableViewController.swift */,
+				BB00478121A632A00042A54A /* ProfileTableViewCell.swift */,
+			);
+			name = Profile;
+			path = ..;
 			sourceTree = "<group>";
 		};
 		BB1E2085211B8A1E004F23D1 /* Not Used */ = {
@@ -401,6 +419,7 @@
 				BB9C3B75216ED18200EBCA60 /* Purchases.storyboard in Resources */,
 				BBDDBF192124AC1F00CC945B /* Onboarding.storyboard in Resources */,
 				BB7FED2021375F5D00A180CB /* indiTransparent.png in Resources */,
+				BB00477B21A62FD40042A54A /* Profile.storyboard in Resources */,
 				BB74D2032149F0000087DD1B /* grayBackArrow.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -454,6 +473,7 @@
 				"${BUILT_PRODUCTS_DIR}/FacebookCore/FacebookCore.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
+				"${BUILT_PRODUCTS_DIR}/IQKeyboardManagerSwift/IQKeyboardManagerSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/Kingfisher/Kingfisher.framework",
 				"${BUILT_PRODUCTS_DIR}/MessageKit/MessageKit.framework",
 				"${BUILT_PRODUCTS_DIR}/PKHUD/PKHUD.framework",
@@ -479,6 +499,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookCore.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IQKeyboardManagerSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Kingfisher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MessageKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PKHUD.framework",
@@ -509,11 +530,13 @@
 				4859775320A68B1C00429CB3 /* ChannelsViewController.swift in Sources */,
 				4859775720A68C6F00429CB3 /* NavigationController.swift in Sources */,
 				4859775520A68BF500429CB3 /* AppController.swift in Sources */,
+				BB00478221A632A00042A54A /* ProfileTableViewCell.swift in Sources */,
 				BB74D1FD2149AF7C0087DD1B /* IndiProViewController.swift in Sources */,
 				481A352E20A8E956008CD16B /* UICollectionView+Additions.swift in Sources */,
 				4859775020A68AF800429CB3 /* LoginViewController.swift in Sources */,
 				4859775E20A69CD500429CB3 /* UIView+Additions.swift in Sources */,
 				48AC74C720A66C2A00AA1788 /* AppDelegate.swift in Sources */,
+				BB00478021A630D20042A54A /* ProfileTableViewController.swift in Sources */,
 				BB1F02AC2177F7DA00A0481F /* FoodJournalViewController.swift in Sources */,
 				BBE03CB121545FCE00493243 /* AnalyticsManager.swift in Sources */,
 				BB406F0621361C670068A643 /* OnboardingViewController.swift in Sources */,

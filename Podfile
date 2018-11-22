@@ -21,4 +21,5 @@ target 'RWRC' do
   pod 'FacebookCore'
   pod 'AppsFlyerFramework'
   pod 'Amplitude-iOS', '~> 4.0.4'
+  pod 'IQKeyboardManagerSwift'
 end

@@ -14,14 +14,21 @@ class FoodJournalViewController: UIViewController, UITableViewDataSource, UITabl
   var dayIndex = 0
    //var journalEntriesT = [JournalEntry(name: "Apple", totalCalories: 80, quantityDescription: "One cup", id: 1), JournalEntry(name: "Banana", totalCalories: 90, quantityDescription: "Three slices", id: 2), JournalEntry(name: "Starbucks Sandwhich", totalCalories: 533, quantityDescription: "one sandwhich", id: 3), JournalEntry(name: "Apple", totalCalories: 80, quantityDescription: "One cup", id: 4)]
   var journalEntries : [JournalEntry] = []
-  @IBOutlet weak var emptyStateTextLabel: UILabel!
-  @IBOutlet weak var emptyStateView: UIView!
-  @IBOutlet weak var tableViewFrame: UIView!
-  @IBOutlet weak var quickAddButton: UIButton!
-  @IBOutlet weak var dateLabel: UILabel!
-  @IBOutlet weak var totalCaloriesLabel: UILabel!
-  @IBOutlet weak var tableView: UITableView!
-  override func viewDidLoad() {
+  var caloriesGoal : Int = 0
+    @IBOutlet weak var emptyStateTextLabel: UILabel!
+    @IBOutlet weak var emptyStateView: UIView!
+    @IBOutlet weak var tableViewFrame: UIView!
+    @IBOutlet weak var quickAddButton: UIButton!
+    @IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet weak var totalCaloriesLabel: UILabel?
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var goalLabel: UILabel?
+    @IBOutlet weak var eatenFoodlabel: UILabel?
+    @IBOutlet weak var remainingCaloriesLabel: UILabel?
+    
+    
+    
+    override func viewDidLoad() {
     super.viewDidLoad()
     tableView.delegate = self
     tableView.dataSource = self
@@ -172,7 +179,11 @@ class FoodJournalViewController: UIViewController, UITableViewDataSource, UITabl
     for entry in journalEntries {
       totalCalories += entry.totalCalories
     }
-    totalCaloriesLabel.text = "Total Calories: " + String(totalCalories)
+    goalLabel?.text = String(caloriesGoal)
+    eatenFoodlabel?.text = String(totalCalories)
+    remainingCaloriesLabel?.text = String(caloriesGoal - totalCalories)
+    totalCaloriesLabel?.text = "Total Calories: " + String(totalCalories)
+    
     tableView.reloadData()
   }
   
@@ -207,10 +218,11 @@ class FoodJournalViewController: UIViewController, UITableViewDataSource, UITabl
   
   func downloadEntriesForDay(dayIndex: Int) {
     HUD.show(.progress)
-    NetworkingManager().getCaloriesEntriesForDateRange(dateIndex: dayIndex) { (didCompleteSuccessfully, journalEntries) in
+    NetworkingManager().getCaloriesEntriesForDateRange(dateIndex: dayIndex) { (didCompleteSuccessfully, journalEntries, caloriesGoal) in
       HUD.hide()
       if didCompleteSuccessfully {
         self.journalEntries = journalEntries
+        self.caloriesGoal = caloriesGoal
         self.reloadTableView()
       } else {
         HUD.flash(HUDContentType.labeledError(title: "Error", subtitle: " Are you connected to the internet? "),  delay: 2, completion: nil)

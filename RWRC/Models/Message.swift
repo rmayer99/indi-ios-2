@@ -49,6 +49,8 @@ struct Message: MessageType {
     case daysOfTheWeek
     case height
     case confirmCalories
+    case weightGoal
+    case lifestyleType
   }
   
   var kind: MessageKind {
@@ -140,6 +142,10 @@ struct Message: MessageType {
       return .daysOfTheWeek
     } else if inputType == "HEIGHT" {
       return .height
+    } else if inputType == "WEIGHT_GOAL" {
+      return .weightGoal
+    } else if inputType == "LIFESTYLE_TYPE" {
+      return .lifestyleType
     } else {
       return .text
     }

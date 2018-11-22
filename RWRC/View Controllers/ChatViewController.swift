@@ -72,6 +72,9 @@ final class ChatViewController: MessagesViewController, UIGestureRecognizerDeleg
   let confirmCaloriesArr = ["Yes", "No", "Enter different amount"]
   let heightDenominations = ["Feet", "Meters"]
   let genderDenominations = ["Female", "Male", "Non-Binary"]
+  let lifestyleTypes = ["Sedentary", "Slightly Active", "Very Active", "Hardcore"]
+  let weightGoalsInLbs = ["Lose 2 lbs", "Lose 1 lb", "Stay the same", "Gain 1 lb", "Gain 2 lbs"]
+    let weightGoalsInKgs = ["Lose 1 Kilo", "Lose 0.5 Kilos", "Stay the same", "Gain 0.5 Kilos", "Gain 1 Kilo"]
   var selectedDays : [Int] = []
   var selectedTypeDenominationForPickerView = 0
   
@@ -82,6 +85,8 @@ final class ChatViewController: MessagesViewController, UIGestureRecognizerDeleg
     case height
     case gender
     case confirmCalories
+    case weightGoal
+    case lifestyleType
   }
   
   deinit {
@@ -99,7 +104,15 @@ final class ChatViewController: MessagesViewController, UIGestureRecognizerDeleg
     fatalError("init(coder:) has not been implemented")
   }
   
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    messagesCollectionView.contentInset.bottom = messageInputBar.frame.height
+    messagesCollectionView.scrollIndicatorInsets.bottom = messageInputBar.frame.height
+    messagesCollectionView.scrollToBottom()
+  }
+  
   override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
     if UserDataManager.sharedInstance.didPurchaseIndiPro == true {
       if UserDataManager.sharedInstance.configs.aggressiveReviewRequest && UserDataManager.sharedInstance.hasAskedForReview == false {
         let alertController = UIAlertController(title: "Could you give Indi 5 stars?", message: "It really helps! ☺️", preferredStyle: .alert)
@@ -191,23 +204,25 @@ final class ChatViewController: MessagesViewController, UIGestureRecognizerDeleg
     
     let indiProItem = UIBarButtonItem()
     if UserDataManager.sharedInstance.didPurchaseIndiPro == true {
-      indiProItem.title = ""
+      let profileItem = UIBarButtonItem()
+      profileItem.image = UIImage(named: "profileIconSmall")
+      profileItem.action = #selector(profileButtonPressed)
+      navigationItem.rightBarButtonItem = profileItem
     } else {
-      let a = UserDataManager.sharedInstance.configs
       indiProItem.title = UserDataManager.sharedInstance.configs.activateIndiButtonName
+      indiProItem.action = #selector(indiProButtonPressed)
+      navigationItem.rightBarButtonItem = indiProItem
     }
+  
+    let journalItem = UIBarButtonItem()
+    journalItem.image = UIImage(named: "foodJournalIcon.png")
+    journalItem.action = #selector(journalButtonPressed)
+    navigationItem.leftBarButtonItem = journalItem
     
-    indiProItem.action = #selector(indiProButtonPressed)
-    navigationItem.rightBarButtonItem = indiProItem
-    
-        let profileItem = UIBarButtonItem()
-        profileItem.image = #imageLiteral(resourceName: "camera")
-        profileItem.action = #selector(profileButtonPressed)
-        navigationItem.leftBarButtonItem = profileItem
     
     messageInputBar.leftStackView.alignment = .center
     // messageInputBar.setLeftStackViewWidthConstant(to: 50, animated: false)
-    // messageInputBar.setStackViewItems([cameraItem], forStack: .left, animated: false) // 3
+    // messageInputBar.setStackViewItems([journalItem], forStack: .left, animated: false)
     
     self.messagesCollectionView.messageCellDelegate = self
     
@@ -226,17 +241,36 @@ final class ChatViewController: MessagesViewController, UIGestureRecognizerDeleg
     UserDataManager.sharedInstance.getConfigData()
   }
   
+//  override func viewDidLayoutSubviews() {
+//    super.viewDidLayoutSubviews()
+//    messagesCollectionView.contentInset.bottom = messageInputBar.frame.height
+//    messagesCollectionView.scrollIndicatorInsets.bottom = messageInputBar.frame.height
+//  }
+  
   // MARK: - Actions
   
   @objc private func indiProButtonPressed() {
     let storyboard = UIStoryboard(name: "Purchases", bundle: nil)
     var indiProVC = storyboard.instantiateViewController(withIdentifier: Identifiers.indiProVC)
+    messageInputBar.inputTextView.resignFirstResponder()
     self.navigationController?.pushViewController(indiProVC, animated: true)
   }
   
+  
   @objc private func profileButtonPressed() {
+    let storyboard = UIStoryboard(name: "Profile", bundle: nil)
+    var journalVC = storyboard.instantiateViewController(withIdentifier: "ProfileTableVC")
+    messageInputBar.inputTextView.resignFirstResponder()
+    self.navigationController?.show(journalVC, sender: self)
+  }
+  
+  @objc private func journalButtonPressed() {
     let storyboard = UIStoryboard(name: "Journal", bundle: nil)
     var journalVC = storyboard.instantiateViewController(withIdentifier: "FoodJournalVC")
+    if UserDataManager.sharedInstance.shouldDisplayCaloriesGoal() {
+      journalVC = storyboard.instantiateViewController(withIdentifier: "FoodJournalWithGoalVC")
+    }
+    messageInputBar.inputTextView.resignFirstResponder()
     self.present(journalVC, animated: true, completion: nil)
   }
   
@@ -255,7 +289,13 @@ final class ChatViewController: MessagesViewController, UIGestureRecognizerDeleg
   
   
   func didPurchasePro() {
-    navigationItem.rightBarButtonItem?.title = ""
+    //navigationItem.rightBarButtonItem?.title = ""
+    
+    let profileItem = UIBarButtonItem()
+    profileItem.image = UIImage(named: "camera")
+    profileItem.action = #selector(journalButtonPressed)
+    navigationItem.rightBarButtonItem = profileItem
+    
     HUD.flash(HUDContentType.labeledSuccess(title: "Success!", subtitle: "  Indi has been activated!  "), delay: 2.5)
   }
   
@@ -365,6 +405,14 @@ final class ChatViewController: MessagesViewController, UIGestureRecognizerDeleg
     case .height:
       messageInputBar.inputTextView.inputView = customPickerView
       customPicerViewType = .height
+      customPickerView.reloadAllComponents()
+    case .lifestyleType:
+      messageInputBar.inputTextView.inputView = customPickerView
+      customPicerViewType = .lifestyleType
+      customPickerView.reloadAllComponents()
+    case .weightGoal:
+      messageInputBar.inputTextView.inputView = customPickerView
+      customPicerViewType = .weightGoal
       customPickerView.reloadAllComponents()
     case .number:
       messageInputBar.inputTextView.inputView = oldInputView
@@ -689,6 +737,10 @@ extension ChatViewController: UIPickerViewDelegate, UIPickerViewDataSource {
       return 1
     case .confirmCalories:
       return 1
+    case .weightGoal:
+      return 2
+    case .lifestyleType:
+      return 1
     }
   }
   
@@ -723,6 +775,14 @@ extension ChatViewController: UIPickerViewDelegate, UIPickerViewDataSource {
       return 2
     case .confirmCalories:
       return 3
+    case .weightGoal:
+      if component == 1 {
+        return 2
+      } else {
+        return 5
+      }
+    case .lifestyleType:
+      return 4
     }
   }
   
@@ -756,6 +816,14 @@ extension ChatViewController: UIPickerViewDelegate, UIPickerViewDataSource {
       return yesOrNoArr[row]
     case .confirmCalories:
       return confirmCaloriesArr[row]
+    case .weightGoal:
+      if selectedTypeDenominationForPickerView == 0 {
+        return weightGoalsInLbs[row]
+      } else {
+        return weightGoalsInKgs[row]
+      }
+    case .lifestyleType:
+      return lifestyleTypes[row]
     }
   }
   
@@ -765,8 +833,10 @@ extension ChatViewController: UIPickerViewDelegate, UIPickerViewDataSource {
       if component == 0 {
         if selectedTypeDenominationForPickerView == 0 {
           messageInputBar.inputTextView.text = "I weigh \(row + 50) lbs"
+          UserDataManager.sharedInstance.preferredWeightDenomination = "pounds"
         } else {
           messageInputBar.inputTextView.text = "I weigh \(row + 25) kgs"
+          UserDataManager.sharedInstance.preferredWeightDenomination = "kilos"
         }
       } else {
         selectedTypeDenominationForPickerView = row
@@ -777,8 +847,10 @@ extension ChatViewController: UIPickerViewDelegate, UIPickerViewDataSource {
       if component == 0 {
         if selectedTypeDenominationForPickerView == 0 {
           messageInputBar.inputTextView.text = "I'm \((row + 36)/12) Feet, \(row % 12) Inches tall"
+          UserDataManager.sharedInstance.preferredHeightDenomination = "feet"
         } else {
           messageInputBar.inputTextView.text = "I'm \((Double(row) + 100.0)/100.0) Meters tall"
+          UserDataManager.sharedInstance.preferredHeightDenomination = "meters"
         }
       } else {
         selectedTypeDenominationForPickerView = row
@@ -815,6 +887,31 @@ extension ChatViewController: UIPickerViewDelegate, UIPickerViewDataSource {
       pickerView.reloadAllComponents()
       customPickerView.selectRow(row, inComponent: 0, animated: false)
       messageInputBar.inputTextView.text = remindMeOnString
+    case .weightGoal:
+      UserDataManager.sharedInstance.didProcessCaloriesGoal = true
+      if component == 0 {
+        if selectedTypeDenominationForPickerView == 0 {
+          UserDataManager.sharedInstance.preferredWeightDenomination = "pounds"
+          if row == 2 {
+            messageInputBar.inputTextView.text = weightGoalsInLbs[row]
+          } else {
+            messageInputBar.inputTextView.text = weightGoalsInLbs[row] + " per week"
+          }
+        } else {
+          UserDataManager.sharedInstance.preferredWeightDenomination = "kilos"
+          if row == 2 {
+            messageInputBar.inputTextView.text = weightGoalsInKgs[row]
+          } else {
+            messageInputBar.inputTextView.text = weightGoalsInKgs[row] + " per week"
+          }
+        }
+      } else {
+        selectedTypeDenominationForPickerView = row
+        pickerView.reloadComponent(0)
+        messageInputBar.inputTextView.text = ""
+    }
+    case .lifestyleType:
+      messageInputBar.inputTextView.text = lifestyleTypes[row]
     }
   }
   
@@ -857,6 +954,18 @@ extension ChatViewController: UIPickerViewDelegate, UIPickerViewDataSource {
       if selectedDays.contains(row) {
         pickerLabel.font = UIFont.boldSystemFont(ofSize: 20)
       }
+    case .weightGoal:
+      if component == 0 {
+        if selectedTypeDenominationForPickerView == 0 {
+          pickerLabel.text = weightGoalsInLbs[row]
+        } else {
+          pickerLabel.text = weightGoalsInKgs[row]
+        }
+      } else {
+        pickerLabel.text = weightDenominations[row]
+      }
+    case .lifestyleType:
+      pickerLabel.text = lifestyleTypes[row]
     }
     
     return pickerLabel
@@ -867,7 +976,7 @@ extension ChatViewController: UIPickerViewDelegate, UIPickerViewDataSource {
   @objc func pickerTapped(tapRecognizer: UITapGestureRecognizer) {
     
     switch customPicerViewType{
-    case .dayOfTheWeek, .yesOrNo, .confirmCalories:
+    case .dayOfTheWeek, .yesOrNo, .confirmCalories, .gender:
       if tapRecognizer.state == .ended {
         let rowHeight = self.customPickerView.rowSize(forComponent: 0).height
         let selectedRowFrame = self.customPickerView.bounds.insetBy(dx: 0, dy: (self.customPickerView.frame.height - rowHeight) / 2)

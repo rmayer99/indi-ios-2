@@ -89,6 +89,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AppsFlyerTrackerDelegate 
       NetworkingManager().setUserInfo(completionHandler: { _ in })
     }
     AnalyticsManager().recordEvent(eventName: AnalyticsManager.AnalyticsEvents.openedApp)
+    
     return true
   }
   

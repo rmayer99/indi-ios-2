@@ -143,6 +143,7 @@ PODS:
     - gRPC-Core (= 1.14.0)
     - gRPC-RxLibrary (= 1.14.0)
   - GTMSessionFetcher/Core (1.2.0)
+  - IQKeyboardManagerSwift (6.1.1)
   - Kingfisher (4.10.0)
   - leveldb-library (1.20)
   - MessageKit (1.0.0)
@@ -170,6 +171,7 @@ DEPENDENCIES:
   - Firebase/Firestore
   - Firebase/Messaging
   - Firebase/Storage
+  - IQKeyboardManagerSwift
   - Kingfisher
   - MessageKit
   - paper-onboarding
@@ -206,6 +208,7 @@ SPEC REPOS:
     - gRPC-ProtoRPC
     - gRPC-RxLibrary
     - GTMSessionFetcher
+    - IQKeyboardManagerSwift
     - Kingfisher
     - leveldb-library
     - MessageKit
@@ -244,6 +247,7 @@ SPEC CHECKSUMS:
   gRPC-ProtoRPC: 76f6053639a842e1fb45fa82aa598bf3f4d9f66f
   gRPC-RxLibrary: 3c305f32155024b116b780f389323c73a28197e6
   GTMSessionFetcher: 0c4baf0a73acd0041bf9f71ea018deedab5ea84e
+  IQKeyboardManagerSwift: 977affaeb4d6e971975c7790a6850f31d38f1207
   Kingfisher: 43c4b802d8b5256cf1f4379e9cd10b329be6d3e2
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
   MessageKit: 16160036b16476b04bd0e9f2c7ce67e662e503e4
@@ -254,6 +258,6 @@ SPEC CHECKSUMS:
   Purchases: f1558c9f24acd188ff65d17cc8a94bcc8800dffe
   SwiftyJSON: c29297daf073d2aa016295d5809cdd68045c39b3
 
-PODFILE CHECKSUM: 8eb83564f5330e509c9ba5d2ac8aa48eef1e1706
+PODFILE CHECKSUM: 4ebadac3660d0ee516518218c7a1aae9a5d8e6c2
 
 COCOAPODS: 1.5.0

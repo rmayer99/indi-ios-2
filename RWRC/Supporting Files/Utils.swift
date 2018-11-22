@@ -47,6 +47,16 @@ func utcDateToLocalTime(date: Date?) -> Date? {
   // create dateFormatter with UTC time format
 }
 
+func formatDateForDisplay(date: Date?) -> String {
+  let formatter = DateFormatter()
+  formatter.dateFormat = "MMM dd yyyy"
+  if date != nil {
+    return formatter.string(from: date!)
+  } else {
+    return ""
+  }
+}
+
 func getUTCdate() -> String {
   let utcDate = Date()
   let formatter = DateFormatter()
